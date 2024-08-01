@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conveyor Digital Passport</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mqtt/4.3.7/mqtt.min.js"></script>
+    <!--<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>-->
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <header>
+        <h1>Conveyor Digital Passport</h1>
+    </header>
+    <main class="main-container">
+        <section id="qr_code">
+            <div class="qr-container">
+                <p> <img src="qr_conv2.png" alt="QR Code" width="200" height="200"\> </p>
+                <p> <img src="conveyor_c_qrcode.jpeg" alt="QR Code" width="200" height="400"\> </p>
+            </div>
+        </section>
+        <div class="content-container">
+            <section id="buttons">
+                <button onclick="showSection('identification')">Identification</button>
+                <button onclick="showSection('technicaldata')">Technical data</button>
+                <button onclick="showSection('productiondata')">Production data</button>
+                <button onclick="showSection('videosystem')">Conveyor operation</button>
+                <button onclick="showSection('introduction')">Operational data</button>
+                <button onclick="showSection('details')">Other information</button>
+            </section>
+            <div id="content">
+                <section id="identification" class="content-section">
+                    <h2>Identification</h2>
+                    <p id="productIdentifier">Product Identifier: CeDRI-1720704766312-2898</p>
+                    <p id="brand">Brand: Instituto Politécnico de Bragança</p>
+                    <p id="model">Model: Conveyor Module</p>
+                </section>
+                <section id="technicaldata" class="content-section" style="display:none;">
+                    <h2>Product description</h2>
+                    <div id="productdescription">
+                        <div class="toggle" onclick="toggleList('physicalList', this)">
+                            <span class="arrow"></span> Physical part
+                        </div>
+                        <ul id="physicalList" class="hidden">
+                            <div class="toggle" onclick="toggleList('motorsList', this)">
+                                <span class="arrow"></span> Motors
+                            </div>
+                            <ul id="motorsList" class="hidden">
+                                <li>DC motor</li>
+                                <ul>
+                                    <li>Brand: Fischertechnik</li>
+                                    <li>Power supply: 24 V</li>
+                                </ul>
+                            </ul>
+                            <div class="toggle" onclick="toggleList('beltList', this)">
+                                <span class="arrow"></span> Conveyor belt
+                            </div>
+                            <ul id="beltList" class="hidden">
+                                <li>Conveyor belt</li>
+                                <ul>
+                                    <li>Brand: Fischertechnik</li>
+                                </ul>
+                            </ul>
+                            <div class="toggle" onclick="toggleList('sensorsList', this)">
+                                <span class="arrow"></span> Sensors
+                            </div>
+                            <ul id="sensorsList" class="hidden">
+                                <li>Photoelectric sensor</li>
+                                <ul>
+                                    <li>Phototransistor</li>
+                                    <li>LED lights barrier</li>
+                                    <li>Role: Input detection</li>
+                                    <li>Brand: Fischertechnik</li>
+                                </ul>
+                                <li>Photoelectric sensor</li>
+                                <ul>
+                                    <li>Phototransistor</li>
+                                    <li>LED lights barrier</li>
+                                    <li>Role: Output detection</li>
+                                    <li>Brand: Fischertechnik</li>
+                                </ul>
+                                <li>Current sensor</li>
+                                <ul>
+                                    <li>Specification: INA219 Current Sensor Breakout (<a href="https://learn.adafruit.com/adafruit-ina219-current-sensor-breakout/overview" target="_blank">Adafruit</a>)</li>
+                                </ul>
+                                <li>Accelerometer sensor:</li>
+                                <ul>
+                                    <li>Specification: ADXL345 (<a href="https://www.analog.com/media/en/technical-documentation/data-sheets/adxl345.pdf" target="_blank">Keyestudio</a>)</li>
+                                </ul>
+                            </ul>
+                            <div class="toggle" onclick="toggleList('batteryList', this)">
+                                <span class="arrow"></span> Power supply
+                            </div>
+                            <ul id="batteryList" class="hidden">
+                                <li>Battery 12V</li>
+                                <li>Power supply socket to enable direct power supply from the source (AC power supply)</li>
+                            </ul>
+                            <div class="toggle" onclick="toggleList('pcbList', this)">
+                                <span class="arrow"></span> Printed Circuit Board
+                            </div>
+                            <ul id="pcbList" class="hidden">
+                                <li>The board is used to establish a connection between the controller and the components of the transportation system. The electronic components included are resistors, capacitors, transistors, a 0.95" OLED RGB LCD display, an on/off switch, a step-down converter (7-24V to USB 5V 3A for Raspberry Pi power supply), and a step-up converter for the conveyor components power supply.</li>
+                            </ul>
+                        </ul>
+                        <div class="toggle" onclick="toggleList('cyberList', this)">
+                            <span class="arrow"></span> Cyber part
+                        </div>
+                        <ul id="cyberList" class="hidden">
+                            <li>Controller: <a href="https://www.raspberrypi.com/products/raspberry-pi-3-model-b-plus/" target="_blank">Raspberry Pi 3 Model B+</a></li>
+                            <li>Control: Agent-based control</li>
+                            <li>Connectivity: Wi-Fi</li>
+                        </ul>
+                    </div>    
+                </section>
+                <section id="productiondata" class="content-section" style="display:none;">
+                    <h2>Production data</h2>
+                    <p id="location">Manufacturing Location: Instituto Politécnico de Bragança, 5300-253 </p>
+                    <p> City: Bragança </p>
+                    <p> Country: Portugal</p>
+                    <p id="date">Date: 14-02-2019</p>
+                    <div id="map" style="height: 300px; border: 1px solid black;"></div>
+                </section>
+                <section id="videosystem" class="content-section" style="display:none;">
+                    <h2>Conveyor operation</h2>
+                    <div id="video" class="section">
+                        <p>The conveyor's functioning is presented in the following video</p>
+                        <iframe width="560" height="315" src="conv_video.mp4" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                    <!--<p> Please, click here if you want to know more about the system's control operation:
+                    <a href="https://www.youtube.com/watch?v=HMG2_tTGk20&t=5s" target="_blank">link</a></p>
+                    <iframe width="560" height="315" src="https://www.youtube.com/watch?v=HMG2_tTGk20&t=5s" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    <p> Please note that clicking on the link will direct you to a YouTube video.</p> -->
+                </section>
+                <section id="introduction" class="content-section" style="display:none;">
+                    <h2>Operational data</h2>
+                    <!--<p>The operational data of the conveyor digital passport is temporarily unavailable.</p>-->
+                    <p>Number of conveyors in the sequence: <span id="conveyorCount">No data being published at the moment.</span></p>
+                    <p>Position occupied in the sequence: <span id="position_in_sequence">No data being published at the moment.</span></p>
+                    <p>Number of pieces transported: <span id="number_of_pieces">No data being published at the moment.</span></p>
+                    <p>Time to transport the last piece: <span id="last_piece_time">No data being published at the moment.</span></p>
+                    <p>Motor operating time in the last transport: <span id="motor_operating_time">No data being published at the moment.</span></p>
+                    <p>Motor status: <span id="motor_status">No data being published at the moment.</span></p>
+                    <p>Input sensor status: <span id="input_sensor_status">No data being published at the moment.</span></p>
+                    <p>Output sensor status: <span id="output_sensor_status">No data being published at the moment.</span></p>
+                    <p>Vibration: <span id="vibration">No data being published at the moment.</span></p>
+                    <p>Current: <span id="current">No data being published at the moment.</span></p>
+                    <p>Battery level: <span id="battery_level">No data being published at the moment.</span></p>
+                    <p>Last values update / Last values received at: <span id="update_date">No data being published at the moment.</span></p>
+                </section>
+                <section id="details" class="content-section" style="display:none;">
+                    <!--<h2>Detailed Information</h2> -->
+                    <p>More information about the Conveyor Digital Passport: victoria@ipb.pt</p>
+                </section>
+            <!-- Additional sections as needed -->
+            </div>
+        </div>
+    </main>    
+    <!-- <footer>
+        <p>Contact: victoria@ipb.pt</p>
+    </footer> -->
+    <footer>
+        <div class="footer-content">
+            <img src="cedri_blue-EN.png" alt="Logo CEDRI" class="footer-logo">
+            <img src="logo_ipb.png" alt="Logo IPB" class="footer-logo">
+            <p>Contact: victoria@ipb.pt</p>
+        </div>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>
